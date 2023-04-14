@@ -1,6 +1,8 @@
 import React from 'react'
 import { Link} from 'react-router-dom'
 import Auth from './Auth'
+import SignInModal from './SignInModal'
+
 
 const Navbar = () => {
   return (
@@ -11,6 +13,9 @@ const Navbar = () => {
       <Link to ='/Dashboard'> Dashboard</Link>
       <Link to ='/Profile'> Profile</Link>
       <Auth/>
+      <SignInModal/>
+
+      
     </div>
     </>
   )
