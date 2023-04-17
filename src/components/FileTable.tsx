@@ -1,27 +1,28 @@
 import {DataGrid, GridColDef} from '@mui/x-data-grid'
 import { getStorage, ref, listAll, getDownloadURL, updateMetadata, getMetadata } from "firebase/storage";
 
+
+const storage = getStorage();
+const listRef = ref(storage, 'projectfiles');
+
 interface DocObj{
   author?: String
   title?: string
   downloadurl?: string
 }
 
-const storage = getStorage();
-const listRef = ref(storage, 'projectfiles');
 
 const doclist: DocObj[] = []
 let docobj: DocObj ={
-  author: '',
-  title:'',
-  downloadurl:'',
+author: '',
+title:'',
+downloadurl:'',
 
 }
 
-
- listAll(listRef)
-  .then( (res) => {
-    res.items.forEach((itemRef) => {
+listAll(listRef)
+        .then( (res) => {
+        res.items.forEach((itemRef) => {
       (getDownloadURL(itemRef))
       .then((url)=>{
         const newMetadata={
@@ -45,13 +46,7 @@ let docobj: DocObj ={
   });
 
 
-const columns: GridColDef[]= [
-    //{field:'id', headerName:'ID', width:90, hideable:true},
-    {field: 'filename', headerName: 'File Name', flex:1},
-    {field: 'author', headerName: 'Author', flex:1},
-    {field: 'title', headerName: 'Title', flex:1}
-    
-]
+
 
 const FileTable = () => {
   return (

@@ -1,6 +1,6 @@
 
 import {storage} from '../config/firebase'
-import {ref, uploadBytes, getStorage, getDownloadURL} from 'firebase/storage'
+import {ref, uploadBytes, getStorage, getDownloadURL,  listAll,  updateMetadata, getMetadata} from 'firebase/storage'
 import {useState, useEffect} from 'react'
 import {
     auth,
@@ -13,9 +13,10 @@ interface Metadata {
       title: string
     };
   }
+
+  
   
 const FileUploader = () => {
-
     const [fileUpload, setFileUpload] = useState<Blob | null>(null);
     const [filetitle, setFileTitle] = useState('')
 
@@ -25,9 +26,7 @@ const FileUploader = () => {
             title: filetitle
         }
     }
-
-
-
+    const listRef = ref(storage, 'projectfiles');
 
       const uploadFile= async() =>{
   
@@ -36,6 +35,8 @@ const FileUploader = () => {
         try{
         await uploadBytes(filesFolderRef, fileUpload, metadata )
         } catch(err){console.error(err)} window.location.reload();
+        
+
       }
 
   return (
