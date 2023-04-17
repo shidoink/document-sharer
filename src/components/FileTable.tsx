@@ -1,21 +1,12 @@
+
 import {useState} from 'react'
 import {DataGrid, GridColDef} from '@mui/x-data-grid'
-import { getStorage, ref, listAll, getDownloadURL, getMetadata } from "firebase/storage";
+import { getStorage, ref, listAll, getDownloadURL, updateMetadata, getMetadata } from "firebase/storage";
 
-const [counter, setCounter]= useState(0)
 
 
 const storage = getStorage();
 const listRef = ref(storage, 'projectfiles');
-
-const docs =[
-
-
-  {docURL:'',
-  docAuthor:'',
-  docTitle:''}
-
-]
 
 
 
@@ -24,13 +15,17 @@ listAll(listRef)
     res.items.forEach((itemRef) => {
       (getDownloadURL(itemRef))
       .then((url)=>{
-        console.log(url)
+        const newMetadata={
+          customMetadata:{
+          'downloadurl': url
+          }
+        }
+        updateMetadata(itemRef, newMetadata)
       });
       (getMetadata(itemRef))
       .then((metadata)=>{
         console.log(metadata.customMetadata)
       })
-    
     });
  }).catch((error) => {
     alert('error!')

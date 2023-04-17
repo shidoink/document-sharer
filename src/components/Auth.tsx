@@ -12,7 +12,7 @@ import {
 
 const Auth = () => {
     const [loggedIn, setLoggedIn] = useState(false)
-    console.log(auth?.currentUser?.email)
+    //console.log(auth?.currentUser?.email)
 
     
     const logout= async()=>{
