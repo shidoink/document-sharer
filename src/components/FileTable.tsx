@@ -1,16 +1,25 @@
-
-import {useState} from 'react'
 import {DataGrid, GridColDef} from '@mui/x-data-grid'
 import { getStorage, ref, listAll, getDownloadURL, updateMetadata, getMetadata } from "firebase/storage";
 
-
+interface DocObj{
+  author?: String
+  title?: string
+  downloadurl?: string
+}
 
 const storage = getStorage();
 const listRef = ref(storage, 'projectfiles');
 
+const doclist: DocObj[] = []
+let docobj: DocObj ={
+  author: '',
+  title:'',
+  downloadurl:'',
+
+}
 
 
-listAll(listRef)
+ listAll(listRef)
   .then( (res) => {
     res.items.forEach((itemRef) => {
       (getDownloadURL(itemRef))
@@ -22,10 +31,14 @@ listAll(listRef)
         }
         updateMetadata(itemRef, newMetadata)
       });
-      (getMetadata(itemRef))
-      .then((metadata)=>{
-        console.log(metadata.customMetadata)
-      })
+    (getMetadata(itemRef))
+     .then((metadata)=>{
+       if(metadata.customMetadata){
+       doclist.push(metadata.customMetadata)}
+       console.log(doclist)
+      
+     })
+
     });
  }).catch((error) => {
     alert('error!')
@@ -42,9 +55,25 @@ const columns: GridColDef[]= [
 
 const FileTable = () => {
   return (
-    <div>
+    <>
+    
+    <div className= 'grid-cols-3'>
+     
+      {doclist.map((doc)=>(
+        <div > 
+          <p>{doc.author}</p>
+          <p> {doc.title}</p>
+          <div>
+          <a href= {doc.downloadurl} target="_blank">
+          <button>Posts</button>
+          </a>
+    </div>
+        </div>
+        
+      ))}
       
     </div>
+    </>
   )
 }
 

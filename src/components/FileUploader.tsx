@@ -41,6 +41,7 @@ const FileUploader = () => {
   return (
     <div>
       <div>
+      <button onClick= {()=>window.location.reload()}> Refresh</button>
         <input type= 'text' placeholder= 'Title' name='title' onChange = {(e)=>setFileTitle(e.target.value)}/>
         <input type="file" onChange = {(e)=>
         { if (e.target.files!= null) setFileUpload(e.target.files[0]) }}/>
