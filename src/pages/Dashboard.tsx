@@ -1,5 +1,7 @@
+import { Suspense } from "react"
 import FileUploader from "../components/FileUploader"
 import FileTable from "../components/FileTable"
+
 const Dashboard = () => {
     
   return (
@@ -7,7 +9,9 @@ const Dashboard = () => {
       Dashboard
 
     <FileUploader/>
+    Hello
     <FileTable/>
+    Hello
     </div>
   )
 }

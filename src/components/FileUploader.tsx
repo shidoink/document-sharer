@@ -26,7 +26,6 @@ const FileUploader = () => {
             title: filetitle
         }
     }
-    const listRef = ref(storage, 'projectfiles');
 
       const uploadFile= async() =>{
   
@@ -34,10 +33,17 @@ const FileUploader = () => {
         const filesFolderRef = ref(storage, `projectfiles/${fileUpload.name}`);
         try{
         await uploadBytes(filesFolderRef, fileUpload, metadata )
-        } catch(err){console.error(err)} window.location.reload();
-        
+        } catch(err){console.error(err)};
 
+       getDownloadURL(ref(storage, `projectfiles/${fileUpload.name}`)) 
+       .then((url)=>{
+       const newMetadata={
+        customMetadata:{
+        'downloadurl': url
+        }
       }
+      updateMetadata(ref(storage, `projectfiles/${fileUpload.name}`), newMetadata)
+      })}
 
   return (
     <div>

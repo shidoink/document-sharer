@@ -1,75 +1,40 @@
+import { useEffect, useState } from 'react';
 import {DataGrid, GridColDef} from '@mui/x-data-grid'
 import { getStorage, ref, listAll, getDownloadURL, updateMetadata, getMetadata } from "firebase/storage";
 
 
-const storage = getStorage();
-const listRef = ref(storage, 'projectfiles');
-
-interface DocObj{
-  author?: String
-  title?: string
-  downloadurl?: string
-}
-
-
-const doclist: DocObj[] = []
-let docobj: DocObj ={
-author: '',
-title:'',
-downloadurl:'',
-
-}
-
-listAll(listRef)
-        .then( (res) => {
-        res.items.forEach((itemRef) => {
-      (getDownloadURL(itemRef))
-      .then((url)=>{
-        const newMetadata={
-          customMetadata:{
-          'downloadurl': url
-          }
-        }
-        updateMetadata(itemRef, newMetadata)
-      });
-    (getMetadata(itemRef))
-     .then((metadata)=>{
-       if(metadata.customMetadata){
-       doclist.push(metadata.customMetadata)}
-       console.log(doclist)
-      
-     })
-
-    });
- }).catch((error) => {
-    alert('error!')
-  });
-
-
-
-
 const FileTable = () => {
+
+    const storage = getStorage();
+    const listRef = ref(storage, 'projectfiles');
+   
+
+    listAll(listRef)
+    .then( (res) => {
+    res.items.forEach((itemRef) => {
+  
+    (getMetadata(itemRef))
+      .then((metadata)=>{
+      if(metadata.customMetadata){
+      console.log(metadata.customMetadata)
+    }
+ })
+
+});
+}).catch((error) => {
+alert('error!')
+});
+
+
+
+
   return (
     <>
-    
-    <div className= 'grid-cols-3'>
-     
-      {doclist.map((doc)=>(
-        <div > 
-          <p>{doc.author}</p>
-          <p> {doc.title}</p>
-          <div>
-          <a href= {doc.downloadurl} target="_blank">
-          <button>Posts</button>
-          </a>
-    </div>
-        </div>
-        
-      ))}
-      
+    <div>
+    <button> HEllO</button>
     </div>
     </>
   )
-}
+  }
 
 export default FileTable
