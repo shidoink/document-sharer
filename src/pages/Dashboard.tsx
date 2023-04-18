@@ -5,13 +5,13 @@ import FileTable from "../components/FileTable"
 const Dashboard = () => {
     
   return (
-    <div>
+    <div className="h-full">
       Dashboard
 
     <FileUploader/>
-    Hello
+    
     <FileTable/>
-    Hello
+    
     </div>
   )
 }
