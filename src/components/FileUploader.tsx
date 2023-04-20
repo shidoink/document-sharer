@@ -43,7 +43,10 @@ const FileUploader = () => {
         }
       }
       updateMetadata(ref(storage, `projectfiles/${fileUpload.name}`), newMetadata)
-      })}
+      }
+      )
+      location.reload()
+    }
 
   return (
     <div>

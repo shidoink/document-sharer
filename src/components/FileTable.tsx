@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { getStorage, ref, listAll, getDownloadURL, updateMetadata, getMetadata } from "firebase/storage";
+import { getStorage, ref, listAll, getDownloadURL, updateMetadata, getMetadata, deleteObject  } from "firebase/storage";
 
 
 const FileTable = () => {
   const storage = getStorage();
   const listRef = ref(storage, 'projectfiles');
   const [fileList, setFileList] = useState<{ name: string; author: string; downloadURL: string }[]>([]);
+  const [itemRefs, setItemRefs] = useState<firebase.storage.Reference[]>([]);
 
   useEffect(() => {
     listAll(listRef)
@@ -20,37 +21,87 @@ const FileTable = () => {
                 name: metadata.customMetadata.title, 
                 author: metadata.customMetadata.author, 
                 downloadURL: metadata.customMetadata.downloadurl,
+                uploadDate: metadata.timeCreated,
+                fileType: metadata.contentType
               };
             }
             return null;
           });
         });
         Promise.all(promises)
-          .then((fileList) => {
-            console.log('Filelist', fileList)
-            setFileList(fileList.filter((file): 
-            file is { name: string; author: string; downloadURL: string } => file !== null));
-          })
-          .catch((error) => {
-            console.error('Error retrieving metadata:', error);
-          });
+        .then((fileList) => {
+        console.log('Filelist', fileList)
+        setFileList(fileList.filter((file): 
+        file is { name: string; author: string; downloadURL: string; uploadDate: string; fileType: string; } => file !== null));
+        setItemRefs(res.items);
+        })
+  .catch((error) => {
+    console.error('Error retrieving metadata:', error);
+  });
       })
       .catch((error) => {
         console.error('Error listing items:', error);
       });
   }, []);
 
+  const handleDelete = async (fileToDelete: { name: string; author: string; downloadURL: string }) => {
+    // Find the corresponding storage reference by matching the customMetadata
+    let itemRefToDelete: firebase.storage.Reference | null = null;
+  
+    for (const itemRef of itemRefs) {
+      const metadata = await getMetadata(itemRef);
+      if (metadata.customMetadata) {
+        if (
+          metadata.customMetadata.title === fileToDelete.name &&
+          metadata.customMetadata.author === fileToDelete.author &&
+          metadata.customMetadata.downloadurl === fileToDelete.downloadURL
+        ) {
+          itemRefToDelete = itemRef;
+          break;
+        }
+      }
+    }
+  
+    if (itemRefToDelete) {
+      // Delete the file from Firebase Storage
+      deleteObject(itemRefToDelete)
+        .then(() => {
+          console.log("File deleted successfully");
+  
+          // Remove the file from the fileList state
+          setFileList((prevFileList) =>
+            prevFileList.filter((file) => file !== fileToDelete)
+          );
+        })
+        .catch((error) => {
+          console.error("Error deleting file:", error);
+        });
+    } else {
+      console.error("File reference not found");
+    }
+  };
+
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Title', width: 150 },
     { field: 'author', headerName: 'Author', width: 150 },
+    { field: 'uploadDate', headerName:'Upload Date', width:250},
+    {field: 'fileType', headerName: 'File Type', width: 150},
     {
       field: 'downloadURL',
-      headerName: 'URL',
-      width: 300,
+      headerName: 'Open',
+      width: 75,
       renderCell: (params) => (
         <a href={params.value} target="_blank" rel="noopener noreferrer">
-          Download
+         <i className="fa-sharp fa-regular fa-folder-open fa-2xl"></i>
         </a>
+      ),
+    },
+    {
+      field: 'delete',
+      headerName: 'Delete',
+      width: 150,
+      renderCell: (params) => (
+        <button onClick={() => handleDelete(params.row)}><i className="fa-solid fa-trash fa-2xl"></i></button>
       ),
     },
   ];
