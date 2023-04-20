@@ -5,11 +5,12 @@ import {useState,} from 'react'
 import {auth, googleProvider,} from '../config/firebase'
 
 interface Metadata {
-    customMetadata: {
-      author: string;
-      title: string
-    };
-  }
+  customMetadata: {
+    author_uid?: string;
+    author: string;
+    title: string;
+  };
+}
 
   
   
@@ -18,11 +19,12 @@ const FileUploader = () => {
     const [filetitle, setFileTitle] = useState('')
 
     const metadata: Metadata = {
-        customMetadata: {
-            author: auth?.currentUser?.displayName ?? 'unknown',
-            title: filetitle
-        }
-    }
+      customMetadata: {
+        author: auth?.currentUser?.displayName ?? 'unknown',
+        author_uid: auth?.currentUser?.uid,
+        title: filetitle,
+      },
+    };
 
       const uploadFile= async() =>{
   
@@ -31,22 +33,24 @@ const FileUploader = () => {
           alert('Title field must not be blank.');
           return;
         }
-        const filesFolderRef = ref(storage, `projectfiles/${fileUpload.name}`);
+        const userId= auth?.currentUser?.uid;
+        const filesFolderRef = ref(storage, `projectfiles/${userId}/${fileUpload.name}`);
         try{
         await uploadBytes(filesFolderRef, fileUpload, metadata )
         } catch(err){console.error(err)};
 
-       getDownloadURL(ref(storage, `projectfiles/${fileUpload.name}`)) 
+       getDownloadURL(ref(storage, `projectfiles/${userId}/${fileUpload.name}`)) 
        .then((url)=>{
+      console.log("Download Url", url)
        const newMetadata={
         customMetadata:{
         'downloadurl': url
         }
       }
-      updateMetadata(ref(storage, `projectfiles/${fileUpload.name}`), newMetadata)
+      updateMetadata(ref(storage, `projectfiles/${userId}/${fileUpload.name}`), newMetadata)
       }
       )
-      location.reload()
+      //location.reload()
     }
 
   return (

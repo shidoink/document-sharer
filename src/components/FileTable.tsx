@@ -20,38 +20,53 @@ const FileTable = () => {
   }, []);
 
   useEffect(() => {
-    listAll(listRef)
-      .then((res) => {
-        console.log('List All Response:', res);
-        const promises = res.items.map((itemRef) => {
+    const fetchFiles = async () => {
+      const storage = getStorage();
+      const listRef = ref(storage, "projectfiles");
+      const allUsersList = await listAll(listRef);
+
+      let allFiles: {
+        name: string;
+        author: string;
+        downloadURL: string;
+        uploadDate: string;
+        fileType: string;
+      }[] = [];
+
+      for (const userFolder of allUsersList.prefixes) {
+        const userFilesList = await listAll(userFolder);
+        const promises = userFilesList.items.map((itemRef) => {
           return getMetadata(itemRef).then((metadata) => {
-            console.log('metadata', metadata)
             if (metadata.customMetadata) {
-              return { 
-                name: metadata.customMetadata.title, 
-                author: metadata.customMetadata.author, 
+              return {
+                name: metadata.customMetadata.title,
+                author: metadata.customMetadata.author,
                 downloadURL: metadata.customMetadata.downloadurl,
                 uploadDate: metadata.timeCreated,
-                fileType: metadata.contentType
+                fileType: metadata.contentType,
               };
             }
             return null;
           });
         });
-        Promise.all(promises)
-        .then((fileList) => {
-        console.log('Filelist', fileList)
-        setFileList(fileList.filter((file): 
-        file is { name: string; author: string; downloadURL: string; uploadDate: string; fileType: string; } => file !== null));
-        setItemRefs(res.items);
-        })
-  .catch((error) => {
-    console.error('Error retrieving metadata:', error);
-  });
-      })
-      .catch((error) => {
-        console.error('Error listing items:', error);
-      });
+
+        const userFiles = await Promise.all(promises);
+        allFiles = allFiles.concat(
+          userFiles.filter((file): file is {
+            name: string;
+            author: string;
+            downloadURL: string;
+            uploadDate: string;
+            fileType: string;
+          } => file !== null)
+        );
+      }
+
+      setFileList(allFiles);
+      setItemRefs(allUsersList.items);
+    };
+
+    fetchFiles();
   }, []);
 
   

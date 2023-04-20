@@ -11,7 +11,7 @@ const AuthChecker =({ children }: Props) => {
     const navigate = useNavigate();
 
     const signInOnClick = async () => {
-      const response = await signInWithRedirect(auth, googleProvider.google);
+      const response = await signInWithRedirect(auth, googleProvider);
   }
     
   useEffect(() => {
