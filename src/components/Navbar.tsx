@@ -6,13 +6,11 @@ import Auth from './Auth'
 const Navbar = () => {
   return (
     <>
-    <div className='flex justify-evenly'>
-      <Link to='/'> Home </Link>
+    <div className='flex justify-evenly flex-wrap border-rounded p-6'>
+      <Link to='/'> <div className=''>Home</div> </Link>
       <Link to ='/About'> About</Link> 
       <Link to ='/Dashboard'> Dashboard</Link>
       <Auth/>
-      
-      
     </div>
     </>
   )

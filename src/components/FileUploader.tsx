@@ -1,11 +1,8 @@
 
 import {storage} from '../config/firebase'
-import {ref, uploadBytes, getStorage, getDownloadURL,  listAll,  updateMetadata, getMetadata} from 'firebase/storage'
-import {useState, useEffect} from 'react'
-import {
-    auth,
-    googleProvider,
-        } from '../config/firebase'
+import {ref, uploadBytes, getDownloadURL,  updateMetadata,} from 'firebase/storage'
+import {useState,} from 'react'
+import {auth, googleProvider,} from '../config/firebase'
 
 interface Metadata {
     customMetadata: {
@@ -30,6 +27,10 @@ const FileUploader = () => {
       const uploadFile= async() =>{
   
         if (!fileUpload) return;
+        if (filetitle.trim()===''){
+          alert('Title field must not be blank.');
+          return;
+        }
         const filesFolderRef = ref(storage, `projectfiles/${fileUpload.name}`);
         try{
         await uploadBytes(filesFolderRef, fileUpload, metadata )
@@ -50,12 +51,12 @@ const FileUploader = () => {
 
   return (
     <div>
-      <div>
-      <button onClick= {()=>window.location.reload()}> Refresh</button>
-        <input type= 'text' placeholder= 'Title' name='title' onChange = {(e)=>setFileTitle(e.target.value)}/>
-        <input type="file" onChange = {(e)=>
-        { if (e.target.files!= null) setFileUpload(e.target.files[0]) }}/>
-        <button onClick={uploadFile}>upload file</button>
+      <div className='flex flex-row justify-evenly p-6'>
+      <button onClick= {()=>window.location.reload()}> <i className="fa-solid fa-arrows-rotate fa-2xl"></i></button>
+        <input className='border rounded' type= 'text' placeholder= 'Title' name='title' onChange = {(e)=>setFileTitle(e.target.value)}/>
+        <input className='' type="file" onChange = {(e)=>
+          { if (e.target.files!= null) setFileUpload(e.target.files[0]) }}/>
+        <button className='' onClick={uploadFile}><i className="fa-solid fa-cloud-arrow-up fa-2xl"></i></button>
       </div>
     </div>
   )

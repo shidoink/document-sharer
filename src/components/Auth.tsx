@@ -1,18 +1,10 @@
 import { useState } from 'react'
-
-import {
-    auth,
-    googleProvider,
-        } from '../config/firebase'
-
-import {
-    signInWithPopup,
-    signOut,
-        } from 'firebase/auth'
+import { auth,googleProvider,} from '../config/firebase'
+import {signInWithPopup,signOut,} from 'firebase/auth'
 
 const Auth = () => {
     const [loggedIn, setLoggedIn] = useState(false)
-    //console.log(auth?.currentUser?.email)
+    console.log( "Authorized User:", auth?.currentUser?.email)
 
     
     const logout= async()=>{

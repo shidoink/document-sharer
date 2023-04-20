@@ -3,7 +3,7 @@ import Auth from '../components/Auth'
 
 const Home = () => {
   return (
-    <div>
+    <div className='flex flex-row justify-center mx-auto bg-cover bg-fixed'>
       Home
     </div>
   )

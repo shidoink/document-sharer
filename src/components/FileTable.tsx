@@ -1,13 +1,23 @@
 import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { getStorage, ref, listAll, getDownloadURL, updateMetadata, getMetadata, deleteObject  } from "firebase/storage";
+import { getStorage, ref, listAll, getDownloadURL, updateMetadata, getMetadata, deleteObject, StorageReference  } from "firebase/storage";
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import {auth} from '../config/firebase'
 
 
 const FileTable = () => {
   const storage = getStorage();
   const listRef = ref(storage, 'projectfiles');
   const [fileList, setFileList] = useState<{ name: string; author: string; downloadURL: string }[]>([]);
-  const [itemRefs, setItemRefs] = useState<firebase.storage.Reference[]>([]);
+  const [itemRefs, setItemRefs] = useState<StorageReference[]>([]);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUserEmail(user?.email || null);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     listAll(listRef)
@@ -44,9 +54,16 @@ const FileTable = () => {
       });
   }, []);
 
+  
+
   const handleDelete = async (fileToDelete: { name: string; author: string; downloadURL: string }) => {
+    if (currentUserEmail !== fileToDelete.author) {
+      alert("You do not have permission to delete this file.");
+      return;
+    }
+    
     // Find the corresponding storage reference by matching the customMetadata
-    let itemRefToDelete: firebase.storage.Reference | null = null;
+    let itemRefToDelete: StorageReference | null = null;
   
     for (const itemRef of itemRefs) {
       const metadata = await getMetadata(itemRef);
@@ -81,6 +98,8 @@ const FileTable = () => {
     }
   };
 
+
+  //defines collums of datatable
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Title', width: 150 },
     { field: 'author', headerName: 'Author', width: 150 },
@@ -110,11 +129,12 @@ const FileTable = () => {
   console.log("Rendered fileList:", fileList);
 
   return (
-  
-    <div className={  "container mx-10 my-5 flex flex-col"}
+  <div className= 'flex justify-center'>
+    <div className=  "container mx-10 my-5 flex flex-col"
     style = {{height: 400, width: '100%'}}>
       <DataGrid rows={fileList} columns={columns} getRowId={(row) => row.name + row.author} pageSizeOptions= {[10]} />
       </div>
+  </div>
       
    
   );
