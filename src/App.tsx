@@ -1,13 +1,12 @@
-import {BrowserRouter, Routes, Route, Link} from 'react-router-dom'
+import {HashRouter, Routes, Route, Link} from 'react-router-dom'
 import Navbar from './components/Navbar'
 import routes from './config/routes'
 import AuthChecker from './auth/AuthChecker'
-
-import './App.css'
+import './index.css'
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
     <Navbar/>
         <Routes>
           { routes.map( (route: any, index: any)=>(
@@ -24,7 +23,7 @@ function App() {
           )) }
         </Routes>
      
-   </BrowserRouter>
+   </HashRouter>
   )
 }
 

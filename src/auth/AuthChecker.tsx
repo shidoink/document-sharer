@@ -11,14 +11,17 @@ const AuthChecker =({ children }: Props) => {
     const navigate = useNavigate();
 
     const signInOnClick = async () => {
-      const response = await signInWithRedirect(auth, googleProvider);
+    await signInWithRedirect(auth, googleProvider);
   }
     
   useEffect(() => {
+   
     const auth_state = onAuthStateChanged(auth, (user) => {
+      console.log('user', user)
       if (!user) {
+        navigate('')
         signInOnClick()
-        navigate('');
+        ;
         
       }
     });

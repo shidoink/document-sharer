@@ -7,7 +7,7 @@ const Dashboard = () => {
   return (
     <div className="h-full flex flex-col justify-center">
       
-      <div className='flex justify-center'>
+      <div className='flex justify-center bg-gray-800 text-white p-4'>
         <p>Dashboard</p>
       </div>
     <FileUploader/>

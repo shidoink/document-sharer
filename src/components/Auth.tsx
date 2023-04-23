@@ -32,20 +32,30 @@ const Auth = () => {
   };
 
   return (
-    <div className='flex flex-wrap justify-evenly'>
+    <div className="flex flex-wrap justify-center items-center bg-gray-900 p-4 text-white">
       {!loggedIn ? (
-        <button onClick={signInWithGoogle}>Sign In With Google</button>
+        <button
+          onClick={signInWithGoogle}
+          className="bg-gray-800 py-2 px-4 rounded-md text-white font-semibold hover:bg-gray-700"
+        >
+          Sign In With Google
+        </button>
       ) : (
         <>
-          <div className= 'flex flex-col justify-center'>
+          <div className="flex flex-col justify-center mr-3">
             <img
               src={userDetails.photoURL}
               alt="User profile"
-              style={{ borderRadius: '50%', width: '40px', height: '40px' }}
+              className="rounded-full w-10 h-10 object-cover"
             />
           </div>
-          <div className='align-middle'>{userDetails.displayName}</div>
-          <button onClick={logout}>Logout</button>
+          <div className="align-middle mr-3">{userDetails.displayName}</div>
+          <button
+            onClick={logout}
+            className="bg-gray-800 py-2 px-4 rounded-md text-white font-semibold hover:bg-gray-700"
+          >
+            Logout
+          </button>
         </>
       )}
     </div>

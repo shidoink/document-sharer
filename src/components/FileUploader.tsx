@@ -20,50 +20,71 @@ const FileUploader = () => {
 
     const metadata: Metadata = {
       customMetadata: {
-        author: auth?.currentUser?.displayName ?? 'unknown',
         author_uid: auth?.currentUser?.uid,
+        author: auth?.currentUser?.email ?? 'unknown',
         title: filetitle,
       },
     };
 
-      const uploadFile= async() =>{
-  
-        if (!fileUpload) return;
-        if (filetitle.trim()===''){
-          alert('Title field must not be blank.');
-          return;
-        }
-        const userId= auth?.currentUser?.uid;
-        const filesFolderRef = ref(storage, `projectfiles/${userId}/${fileUpload.name}`);
-        try{
-        await uploadBytes(filesFolderRef, fileUpload, metadata )
-        } catch(err){console.error(err)};
-
-       getDownloadURL(ref(storage, `projectfiles/${userId}/${fileUpload.name}`)) 
-       .then((url)=>{
-      console.log("Download Url", url)
-       const newMetadata={
-        customMetadata:{
-        'downloadurl': url
-        }
+    const uploadFile = async () => {
+      if (!fileUpload) return;
+      if (filetitle.trim() === "") {
+        alert("Title field must not be blank.");
+        return;
       }
-      updateMetadata(ref(storage, `projectfiles/${userId}/${fileUpload.name}`), newMetadata)
+      const userId = auth?.currentUser?.uid;
+      const filesFolderRef = ref(storage, `projectfiles/${userId}/${fileUpload.name}`);
+      try {
+        await uploadBytes(filesFolderRef, fileUpload, metadata);
+      } catch (err) {
+        console.error(err);
       }
-      )
-      //location.reload()
-    }
+    
+      getDownloadURL(ref(storage, `projectfiles/${userId}/${fileUpload.name}`)).then((url) => {
+        console.log("Download Url", url);
+        const newMetadata = {
+          customMetadata: {
+            downloadurl: url,
+          },
+        };
+        updateMetadata(ref(storage, `projectfiles/${userId}/${fileUpload.name}`), newMetadata);
+        // Refresh the file list
+        window.location.reload();
+      });
+    };
 
-  return (
-    <div>
-      <div className='flex flex-row justify-evenly p-6'>
-      <button onClick= {()=>window.location.reload()}> <i className="fa-solid fa-arrows-rotate fa-2xl"></i></button>
-        <input className='border rounded' type= 'text' placeholder= 'Title' name='title' onChange = {(e)=>setFileTitle(e.target.value)}/>
-        <input className='' type="file" onChange = {(e)=>
-          { if (e.target.files!= null) setFileUpload(e.target.files[0]) }}/>
-        <button className='' onClick={uploadFile}><i className="fa-solid fa-cloud-arrow-up fa-2xl"></i></button>
+    return (
+      <div className="bg-gray-800 text-white p-4 rounded-md">
+        <div className="flex flex-row justify-evenly items-center p-6">
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-gray-900 p-2 rounded-md hover:bg-gray-700"
+          >
+            <i className="fa-solid fa-arrows-rotate fa-2xl"></i>
+          </button>
+          <input
+            className="border bg-gray-900 text-white border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-gray-400"
+            type="text"
+            placeholder="Title"
+            name="title"
+            onChange={(e) => setFileTitle(e.target.value)}
+          />
+          <input
+            className="bg-gray-900 p-2 rounded-md text-white cursor-pointer"
+            type="file"
+            onChange={(e) => {
+              if (e.target.files != null) setFileUpload(e.target.files[0]);
+            }}
+          />
+          <button
+            className="bg-gray-900 p-2 rounded-md hover:bg-gray-700"
+            onClick={uploadFile}
+          >
+            <i className="fa-solid fa-cloud-arrow-up fa-2xl"></i>
+          </button>
+        </div>
       </div>
-    </div>
-  )
+    );
 }
 
 
