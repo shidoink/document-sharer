@@ -1,31 +1,35 @@
-import { useEffect, useState } from 'react'
-import { auth, googleProvider } from '../config/firebase'
-import { signInWithPopup, signOut } from 'firebase/auth'
+import { useEffect, useState } from 'react';
+import { auth, googleProvider } from '../config/firebase';
+import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 
 const Auth = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [userDetails, setUserDetails] = useState({ displayName: '', photoURL: '' });
 
   useEffect(() => {
-    if (auth.currentUser) {
-      setUserDetails({
-        displayName: auth.currentUser.displayName || '',
-        photoURL: auth.currentUser.photoURL || '',
-      });
-      setLoggedIn(true);
-    }
-  }, [auth.currentUser]);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserDetails({
+          displayName: user.displayName || '',
+          photoURL: user.photoURL || '',
+        });
+        setLoggedIn(true);
+      } else {
+        setLoggedIn(false);
+        setUserDetails({ displayName: '', photoURL: '' });
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const logout = async () => {
     await signOut(auth);
-    setLoggedIn(false);
-    setUserDetails({ displayName: '', photoURL: '' });
   };
 
   const signInWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-      setLoggedIn(true);
     } catch (err) {
       console.error(err);
     }

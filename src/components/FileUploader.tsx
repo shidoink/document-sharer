@@ -54,7 +54,7 @@ const FileUploader = () => {
     };
 
     return (
-      <div className="bg-gray-800 text-white p-4 rounded-md">
+      <div className="bg-gray-800 text-white p-4 ">
         <div className="flex flex-row justify-evenly items-center p-6">
           <button
             onClick={() => window.location.reload()}
@@ -83,6 +83,8 @@ const FileUploader = () => {
             <i className="fa-solid fa-cloud-arrow-up fa-2xl"></i>
           </button>
         </div>
+        <div className='flex justify-center'>Click on file to update title</div>
+        
       </div>
     );
 }
