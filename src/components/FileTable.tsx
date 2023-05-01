@@ -16,6 +16,7 @@ const FileTable = () => {
   const [selectedRow, setSelectedRow] = useState<{ id: string; title: string } | null>(null);
   const [updatedTitle, setUpdatedTitle] = useState<string>('');
 
+  //check if user is logged in on dashboard
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUserEmail(user?.email || null);
@@ -78,7 +79,7 @@ const FileTable = () => {
     setSelectedRow({ id: row.id, title: row.name });
     setUpdatedTitle(row.name);
   };
-  
+  //update title if user is same as uploader
   const updateTitle = async () => {
     if (!selectedRow) return;
   
@@ -165,12 +166,12 @@ const FileTable = () => {
     }
   
     if (itemRefToDelete) {
-      // Delete the file from Firebase Storage
+      // Delete the file from firebase storage
       deleteObject(itemRefToDelete)
         .then(() => {
           console.log("File deleted successfully");
   
-          // Remove the file from the fileList state
+          // Remove the file from the fileList
           setFileList((prevFileList) =>
             prevFileList.filter((file) => file !== fileToDelete)
           );
